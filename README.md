@@ -1,4 +1,4 @@
-# Meta Model as the Central Intelligence Layer — Two-Phase Architecture for Legacy Banking Codebases
+# Meta Model as the Central Intelligence Layer — Two-Phase Architecture
 
 ---
 
