@@ -1,4 +1,4 @@
-# Meta Model as the Central Intelligence Layer — Two-Phase Architecture for Legacy Banking Codebases
+# Meta Model as the Central Intelligence Layer — Two-Phase Architecture
 
 ---
 
@@ -204,6 +204,8 @@
 - Every consumption agent — documentation generator, compliance checker, code generator — can be updated independently without re-hydrating
 - Invest first in graph completeness and integrity; agent sophistication is secondary
 - A richer, more accurate graph makes every existing and future agent more capable without any changes to the agents themselves
+
+---
 
 
 ---
