@@ -1,4 +1,4 @@
-# Meta Model as the Central Intelligence Layer — Two-Phase Architecture
+# Meta Model as the Central Intelligence Layer — Two-Phase Architecture for Legacy Banking Codebases
 
 ---
 
@@ -205,6 +205,54 @@
 - Invest first in graph completeness and integrity; agent sophistication is secondary
 - A richer, more accurate graph makes every existing and future agent more capable without any changes to the agents themselves
 
+
 ---
 
-*Internal working document — Sumit Builds*
+## Solution Flow
+
+### Overview — two phases
+
+```
+┌─────────────────────────────────┐          ┌─────────────────────────────────┐
+│     Phase 1 — Hydration         │          │     Phase 2 — Runtime           │
+│     (runs once, on demand)      │          │     (runs every pipeline)       │
+│                                 │          │                                 │
+│  Legacy Python codebase         │          │  Pipeline starts                │
+│          ↓                      │          │          ↓                      │
+│  Scanning agents                │          │  Query Meta Model               │
+│  (AST · schema · LLM summary)   │          │  (source fields · logic ·       │
+│          ↓                      │          │   target columns)               │
+│  Extract and write to graph     │          │          ↓                      │
+│  (source fields · logic ·       │          │  Execute with live config       │
+│   target columns)               │          │  (no hardcoded fields)          │
+│          ↓                      │          │          ↓                      │
+│  Graph validated                │          │  Output + audit trail           │
+│  (lineage confirmed vs STM)     │          │  (lineage auto-recorded)        │
+│          ↓                      │          │          ↑                      │
+└─────────────────────────────────┘          └─────────────────────────────────┘
+                    └──────────────────┬──────────────────┘
+                               ┌───────────────┐
+                               │  Meta Model   │
+                               │  (Neo4j graph)│
+                               │               │
+                               │  hydrated once│
+                               │  consumed     │
+                               │  always       │
+                               └───────────────┘
+```
+
+### Runtime query flow — what happens inside every pipeline
+
+```
+                        ┌─────────────────────────────────┐
+                        │          Meta Model             │
+  Pipeline   ──asks──▶  │  · source fields                │  ──returns──▶  Execute  ──▶  Output
+  (starts)              │  · transformation logic         │                (no hardcoded
+                        │  · target columns               │                 fields)
+                        │  · business rules               │
+                        └─────────────────────────────────┘
+                                  hydrated once
+
+  When a source column changes:
+  update one node in the Meta Model — all pipelines pick it up automatically on next run
+```
